@@ -1,0 +1,36 @@
+import java.io.InputStream;
+
+import com.fazecast.jSerialComm.SerialPort;
+
+public class read {
+    /**
+     * Reads the serial input. Hardcoded the serial port. The # of lanes is
+     * adjustable Colorado Time System is set to FAST hence the comport parameter are
+     * 9600, 8 bit and even parity.
+     */
+    public static void main(String[] args) {
+        // index 12 is event name
+        // index 16 is console time
+        //autoFillArray();
+        SerialPort comPort = SerialPort.getCommPort("/dev/tty.usbserial-AL01Z64E");
+        comPort.openPort();
+        comPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
+        comPort.setComPortParameters(9600, 8, 1, SerialPort.EVEN_PARITY);
+
+        try {
+            // Reads the serial output. Anything above 127 is lane output, but need to check
+            // last bit to see if it's data or format
+            InputStream in = comPort.getInputStream();
+            while (true) {
+                int readInt = in.read(); //converts to int
+                System.out.println(in.read());
+                //System.out.println(readInt); //prints
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        comPort.closePort();
+    }
+
+}
+
